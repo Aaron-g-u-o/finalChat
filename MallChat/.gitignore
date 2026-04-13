@@ -75,3 +75,4 @@ ChannelBizBrandWallClient.java
 
 # yml
 *.yml
+!application.yml
