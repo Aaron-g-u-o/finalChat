@@ -2,6 +2,8 @@ package com.abin.mallchat.common.user.service;
 
 import com.abin.mallchat.common.user.domain.enums.WSBaseResp;
 import com.abin.mallchat.common.user.domain.vo.request.ws.WSAuthorize;
+import com.abin.mallchat.common.server.domain.vo.request.ws.WSVoiceJoinReq;
+import com.abin.mallchat.common.server.domain.vo.request.ws.WSVoiceSignalingReq;
 import io.netty.channel.Channel;
 
 public interface WebSocketService {
@@ -62,5 +64,20 @@ public interface WebSocketService {
     void sendToAllOnline(WSBaseResp<?> wsBaseResp);
 
     void sendToUid(WSBaseResp<?> wsBaseResp, Long uid);
+
+    /**
+     * 处理语音加入请求
+     */
+    void handleVoiceJoin(Channel channel, WSVoiceJoinReq req);
+
+    /**
+     * 处理语音离开请求
+     */
+    void handleVoiceLeave(Channel channel, Long channelId);
+
+    /**
+     * 处理语音信令（offer、answer、candidate）
+     */
+    void handleVoiceSignaling(Channel channel, WSVoiceSignalingReq req);
 
 }

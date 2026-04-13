@@ -409,3 +409,139 @@ export type MsgReadUnReadCountType = {
   /** 未读数 */
   unReadCount: number | null
 }
+
+// -------------------- ⬇服务器相关类型定义⬇ ----------------
+
+/** 服务器列表项 */
+export type ServerItem = {
+  /** 服务器ID */
+  id: number
+  /** 服务器名称 */
+  name: string
+  /** 服务器图标 */
+  icon: string
+  /** 服务器描述 */
+  description: string
+  /** 成员数量 */
+  memberCount: number
+  /** 加入时间 */
+  joinTime: number
+  /** 角色ID */
+  roleId: number
+}
+
+/** 服务器成员列表项 */
+export type ServerMemberItem = {
+  /** 用户ID */
+  uid: number
+  /** 用户名 */
+  name: string
+  /** 头像 */
+  avatar: string
+  /** 角色ID */
+  roleId: number
+  /** 角色名称 */
+  roleName: string
+  /** 加入时间 */
+  joinTime: number
+}
+
+/** 频道列表项 */
+export type ChannelItem = {
+  /** 频道ID */
+  id: number
+  /** 频道名称 */
+  name: string
+  /** 频道类型 1文字 2语音 */
+  type: number
+  /** 排序 */
+  sort: number
+}
+
+/** 语音频道信息 */
+export type VoiceChannelInfo = {
+  /** 频道ID */
+  channelId: number
+  /** 频道名称 */
+  channelName: string
+  /** 服务器ID */
+  serverId: number
+  /** 在线人数 */
+  onlineCount: number
+}
+
+/** 语音频道成员 */
+export type VoiceMemberItem = {
+  /** 用户ID */
+  userId: number
+  /** 用户名 */
+  userName: string
+  /** 头像 */
+  avatar: string
+  /** 是否正在说话 */
+  isSpeaking: boolean
+}
+
+/** 创建服务器请求 */
+export type CreateServerReq = {
+  /** 服务器名称 */
+  name: string
+  /** 服务器图标 */
+  icon: string
+  /** 服务器描述 */
+  description: string
+}
+
+/** 更新服务器请求 */
+export type UpdateServerReq = {
+  /** 服务器ID */
+  id: number
+  /** 服务器名称 */
+  name: string
+  /** 服务器图标 */
+  icon: string
+  /** 服务器描述 */
+  description: string
+}
+
+/** 加入服务器请求 */
+export type JoinServerReq = {
+  /** 服务器ID */
+  serverId: number
+}
+
+/** 创建频道请求 */
+export type CreateChannelReq = {
+  /** 服务器ID */
+  serverId: number
+  /** 频道名称 */
+  name: string
+  /** 频道类型 1文字 2语音 */
+  type: number
+  /** 排序 */
+  sort: number
+}
+
+/** 更新频道请求 */
+export type UpdateChannelReq = {
+  /** 频道ID */
+  id: number
+  /** 频道名称 */
+  name: string
+  /** 排序 */
+  sort: number
+}
+
+/** 加入语音频道请求 */
+export type JoinVoiceChannelReq = {
+  /** 服务器ID */
+  serverId: number
+  /** 频道ID */
+  channelId: number
+}
+
+/** 离开语音频道请求 */
+export type LeaveVoiceChannelReq = {
+  /** 频道ID */
+  channelId: number
+}

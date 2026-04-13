@@ -138,4 +138,28 @@ public class WSAdapter {
         wsBaseResp.setData(resp);
         return wsBaseResp;
     }
+
+    public static WSBaseResp<WSVoiceStatus> buildVoiceStatusResp(String type, Long uid, Long channelId) {
+        WSBaseResp<WSVoiceStatus> wsBaseResp = new WSBaseResp<>();
+        wsBaseResp.setType(WSRespTypeEnum.VOICE_STATUS.getType());
+        WSVoiceStatus voiceStatus = WSVoiceStatus.builder()
+                .type(type)
+                .uid(uid)
+                .channelId(channelId)
+                .build();
+        wsBaseResp.setData(voiceStatus);
+        return wsBaseResp;
+    }
+
+    public static WSBaseResp<WSVoiceSignaling> buildVoiceSignalingResp(String type, String payload, Long fromUid) {
+        WSBaseResp<WSVoiceSignaling> wsBaseResp = new WSBaseResp<>();
+        wsBaseResp.setType(WSRespTypeEnum.VOICE_SIGNALING.getType());
+        WSVoiceSignaling voiceSignaling = WSVoiceSignaling.builder()
+                .type(type)
+                .payload(payload)
+                .fromUid(fromUid)
+                .build();
+        wsBaseResp.setData(voiceSignaling);
+        return wsBaseResp;
+    }
 }

@@ -19,6 +19,13 @@ public enum WSReqTypeEnum {
     LOGIN(1, "请求登录二维码"),
     HEARTBEAT(2, "心跳包"),
     AUTHORIZE(3, "登录认证"),
+    VOICE_JOIN(10, "加入语音频道"),
+    VOICE_LEAVE(11, "离开语音频道"),
+    VOICE_OFFER(12, "语音Offer"),
+    VOICE_ANSWER(13, "语音Answer"),
+    VOICE_CANDIDATE(14, "语音ICE候选"),
+    VOICE_USER_JOINED(15, "用户加入语音频道"),
+    VOICE_USER_LEFT(16, "用户离开语音频道"),
     ;
 
     private final Integer type;

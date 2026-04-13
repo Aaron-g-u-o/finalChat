@@ -19,4 +19,12 @@ public class WSChannelExtraDTO {
      * 前端如果登录了，记录uid
      */
     private Long uid;
+    /**
+     * 语音频道ID
+     */
+    private Long voiceChannelId;
+    /**
+     * 服务器ID
+     */
+    private Long serverId;
 }

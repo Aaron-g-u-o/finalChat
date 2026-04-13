@@ -6,6 +6,8 @@ import cn.hutool.json.JSONUtil;
 import com.abin.mallchat.common.user.domain.enums.WSReqTypeEnum;
 import com.abin.mallchat.common.user.domain.vo.request.ws.WSAuthorize;
 import com.abin.mallchat.common.user.domain.vo.request.ws.WSBaseReq;
+import com.abin.mallchat.common.server.domain.vo.request.ws.WSVoiceJoinReq;
+import com.abin.mallchat.common.server.domain.vo.request.ws.WSVoiceSignalingReq;
 import com.abin.mallchat.common.user.service.WebSocketService;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -101,6 +103,20 @@ public class NettyWebSocketServerHandler extends SimpleChannelInboundHandler<Tex
                 log.info("请求二维码 = " + msg.text());
                 break;
             case HEARTBEAT:
+                break;
+            case VOICE_JOIN:
+                WSVoiceJoinReq voiceJoinReq = JSONUtil.toBean(msg.text(), WSVoiceJoinReq.class);
+                this.webSocketService.handleVoiceJoin(ctx.channel(), voiceJoinReq);
+                break;
+            case VOICE_LEAVE:
+                this.webSocketService.handleVoiceLeave(ctx.channel(), null);
+                break;
+            case VOICE_OFFER:
+            case VOICE_ANSWER:
+            case VOICE_CANDIDATE:
+                WSVoiceSignalingReq voiceSignalingReq = JSONUtil.toBean(msg.text(), WSVoiceSignalingReq.class);
+                voiceSignalingReq.setType(wsReqTypeEnum.getDesc());
+                this.webSocketService.handleVoiceSignaling(ctx.channel(), voiceSignalingReq);
                 break;
             default:
                 log.info("未知类型");

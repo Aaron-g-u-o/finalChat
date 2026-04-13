@@ -14,6 +14,8 @@ import com.abin.mallchat.common.user.domain.entity.User;
 import com.abin.mallchat.common.user.domain.enums.RoleEnum;
 import com.abin.mallchat.common.user.domain.enums.WSBaseResp;
 import com.abin.mallchat.common.user.domain.vo.request.ws.WSAuthorize;
+import com.abin.mallchat.common.user.domain.vo.request.ws.WSVoiceJoinReq;
+import com.abin.mallchat.common.user.domain.vo.request.ws.WSVoiceSignalingReq;
 import com.abin.mallchat.common.user.service.IRoleService;
 import com.abin.mallchat.common.user.service.LoginService;
 import com.abin.mallchat.common.user.service.WebSocketService;
@@ -69,6 +71,11 @@ public class WebSocketServiceImpl implements WebSocketService {
      * 所有在线的用户和对应的socket
      */
     private static final ConcurrentHashMap<Long, CopyOnWriteArrayList<Channel>> ONLINE_UID_MAP = new ConcurrentHashMap<>();
+    
+    /**
+     * 语音频道用户映射，key: 语音频道ID, value: 用户ID列表
+     */
+    private static final ConcurrentHashMap<Long, CopyOnWriteArrayList<Long>> VOICE_CHANNEL_USERS_MAP = new ConcurrentHashMap<>();
 
     public static ConcurrentHashMap<Channel, WSChannelExtraDTO> getOnlineMap() {
         return ONLINE_WS_MAP;
@@ -288,6 +295,105 @@ public class WebSocketServiceImpl implements WebSocketService {
      */
     private void sendMsg(Channel channel, WSBaseResp<?> wsBaseResp) {
         channel.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(wsBaseResp)));
+    }
+
+    @Override
+    public void handleVoiceJoin(Channel channel, WSVoiceJoinReq req) {
+        WSChannelExtraDTO channelExtra = getOrInitChannelExt(channel);
+        Long uid = channelExtra.getUid();
+        if (uid == null) {
+            return;
+        }
+
+        // 先离开之前的语音频道
+        if (channelExtra.getVoiceChannelId() != null) {
+            handleVoiceLeave(channel, null);
+        }
+
+        // 更新频道信息
+        channelExtra.setVoiceChannelId(req.getChannelId());
+        channelExtra.setServerId(req.getServerId());
+
+        // 添加到语音频道用户列表
+        VOICE_CHANNEL_USERS_MAP.putIfAbsent(req.getChannelId(), new CopyOnWriteArrayList<>());
+        CopyOnWriteArrayList<Long> users = VOICE_CHANNEL_USERS_MAP.get(req.getChannelId());
+        if (!users.contains(uid)) {
+            users.add(uid);
+        }
+
+        // 通知频道内其他用户有新用户加入
+        notifyVoiceChannelUsers(req.getChannelId(), uid, "VOICE_JOIN");
+    }
+
+    @Override
+    public void handleVoiceLeave(Channel channel, Long channelId) {
+        WSChannelExtraDTO channelExtra = getOrInitChannelExt(channel);
+        Long uid = channelExtra.getUid();
+        if (uid == null) {
+            return;
+        }
+
+        Long voiceChannelId = channelId != null ? channelId : channelExtra.getVoiceChannelId();
+        if (voiceChannelId == null) {
+            return;
+        }
+
+        // 从语音频道用户列表中移除
+        CopyOnWriteArrayList<Long> users = VOICE_CHANNEL_USERS_MAP.get(voiceChannelId);
+        if (users != null) {
+            users.remove(uid);
+            if (users.isEmpty()) {
+                VOICE_CHANNEL_USERS_MAP.remove(voiceChannelId);
+            }
+        }
+
+        // 清空频道信息
+        channelExtra.setVoiceChannelId(null);
+        channelExtra.setServerId(null);
+
+        // 通知频道内其他用户有用户离开
+        notifyVoiceChannelUsers(voiceChannelId, uid, "VOICE_LEAVE");
+    }
+
+    @Override
+    public void handleVoiceSignaling(Channel channel, WSVoiceSignalingReq req) {
+        WSChannelExtraDTO channelExtra = getOrInitChannelExt(channel);
+        Long uid = channelExtra.getUid();
+        Long voiceChannelId = channelExtra.getVoiceChannelId();
+
+        if (uid == null || voiceChannelId == null) {
+            return;
+        }
+
+        // 转发信令给指定用户或频道内所有用户
+        if (req.getTargetUid() != null) {
+            // 转发给指定用户
+            sendToUid(WSAdapter.buildVoiceSignalingResp(req.getType(), req.getPayload(), uid), req.getTargetUid());
+        } else {
+            // 广播给频道内所有用户
+            CopyOnWriteArrayList<Long> users = VOICE_CHANNEL_USERS_MAP.get(voiceChannelId);
+            if (users != null) {
+                users.forEach(targetUid -> {
+                    if (!targetUid.equals(uid)) {
+                        sendToUid(WSAdapter.buildVoiceSignalingResp(req.getType(), req.getPayload(), uid), targetUid);
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * 通知语音频道内的用户
+     */
+    private void notifyVoiceChannelUsers(Long channelId, Long uid, String type) {
+        CopyOnWriteArrayList<Long> users = VOICE_CHANNEL_USERS_MAP.get(channelId);
+        if (users != null) {
+            users.forEach(targetUid -> {
+                if (!targetUid.equals(uid)) {
+                    sendToUid(WSAdapter.buildVoiceStatusResp(type, uid, channelId), targetUid);
+                }
+            });
+        }
     }
 
 }

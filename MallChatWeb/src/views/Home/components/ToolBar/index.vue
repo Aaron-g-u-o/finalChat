@@ -87,6 +87,10 @@ const menuList = [
           <Icon class="tool-icon" icon="group" :size="28" />
         </el-badge>
       </router-link>
+      <!-- 服务器 -->
+      <router-link v-login-show exactActiveClass="tool-icon-active" to="/server">
+        <Icon class="tool-icon" icon="server" :size="28" />
+      </router-link>
     </div>
     <div class="menu">
       <el-tooltip effect="dark" :placement="isPc ? 'right' : 'bottom'">

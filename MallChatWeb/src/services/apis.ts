@@ -17,6 +17,18 @@ import type {
   SessionItem,
   UserInfoType,
   UserItem,
+  ServerItem,
+  CreateServerReq,
+  UpdateServerReq,
+  JoinServerReq,
+  ServerMemberItem,
+  ChannelItem,
+  CreateChannelReq,
+  UpdateChannelReq,
+  VoiceChannelInfo,
+  VoiceMemberItem,
+  JoinVoiceChannelReq,
+  LeaveVoiceChannelReq,
 } from '@/services/types'
 import { alovaIns } from './request'
 import urls from './urls'
@@ -130,4 +142,40 @@ export default {
     deleteRequest<Boolean>(urls.exitGroup, {
       roomId,
     }),
+
+  // -------------- 服务器相关 ---------------
+  /** 获取服务器列表 */
+  getServerList: () => getRequest<ServerItem[]>(urls.getServerList),
+  /** 创建服务器 */
+  createServer: (data: CreateServerReq) => postRequest<ServerItem>(urls.createServer, data),
+  /** 更新服务器 */
+  updateServer: (data: UpdateServerReq) => putRequest<ServerItem>(urls.updateServer, data),
+  /** 删除服务器 */
+  deleteServer: (params: { id: number }) => deleteRequest<Boolean>(urls.deleteServer, params),
+  /** 加入服务器 */
+  joinServer: (data: JoinServerReq) => postRequest<ServerItem>(urls.joinServer, data),
+  /** 离开服务器 */
+  leaveServer: (params: { serverId: number }) => deleteRequest<Boolean>(urls.leaveServer, params),
+  /** 获取服务器成员列表 */
+  getServerMembers: (params: { serverId: number }) => getRequest<ListResponse<ServerMemberItem>>(urls.getServerMembers, { params }),
+
+  // -------------- 频道相关 ---------------
+  /** 获取频道列表 */
+  getChannelList: (params: { serverId: number }) => getRequest<ChannelItem[]>(urls.getChannelList, { params }),
+  /** 创建频道 */
+  createChannel: (data: CreateChannelReq) => postRequest<ChannelItem>(urls.createChannel, data),
+  /** 更新频道 */
+  updateChannel: (data: UpdateChannelReq) => putRequest<ChannelItem>(urls.updateChannel, data),
+  /** 删除频道 */
+  deleteChannel: (params: { id: number }) => deleteRequest<Boolean>(urls.deleteChannel, params),
+
+  // -------------- 语音相关 ---------------
+  /** 加入语音频道 */
+  joinVoiceChannel: (data: JoinVoiceChannelReq) => postRequest<VoiceChannelInfo>(urls.joinVoiceChannel, data),
+  /** 离开语音频道 */
+  leaveVoiceChannel: (data: LeaveVoiceChannelReq) => postRequest<void>(urls.leaveVoiceChannel, data),
+  /** 获取语音频道信息 */
+  getVoiceChannelInfo: (params: { channelId: number }) => getRequest<VoiceChannelInfo>(urls.getVoiceChannelInfo, { params }),
+  /** 获取语音频道成员列表 */
+  getVoiceChannelMembers: (params: { channelId: number }) => getRequest<VoiceMemberItem[]>(urls.getVoiceChannelMembers, { params }),
 }

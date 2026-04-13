@@ -39,4 +39,25 @@ export default {
   groupDetail: `${prefix}/capi/room/public/group`, // 群组详情
   sessionDetail: `${prefix}/capi/chat/public/contact/detail`, // 会话详情
   sessionDetailWithFriends: `${prefix}/capi/chat/public/contact/detail/friend`, // 会话详情(联系人列表发消息用)
+
+  // -------------- 服务器相关 ---------------
+  getServerList: `${prefix}/api/server/list`, // 获取服务器列表
+  createServer: `${prefix}/api/server/create`, // 创建服务器
+  updateServer: `${prefix}/api/server/update`, // 更新服务器
+  deleteServer: `${prefix}/api/server/delete`, // 删除服务器
+  joinServer: `${prefix}/api/server/join`, // 加入服务器
+  leaveServer: `${prefix}/api/server/leave`, // 离开服务器
+  getServerMembers: `${prefix}/api/server/members`, // 获取服务器成员列表
+
+  // -------------- 频道相关 ---------------
+  getChannelList: `${prefix}/api/channel/list`, // 获取频道列表
+  createChannel: `${prefix}/api/channel/create`, // 创建频道
+  updateChannel: `${prefix}/api/channel/update`, // 更新频道
+  deleteChannel: `${prefix}/api/channel/delete`, // 删除频道
+
+  // -------------- 语音相关 ---------------
+  joinVoiceChannel: `${prefix}/api/voice/join`, // 加入语音频道
+  leaveVoiceChannel: `${prefix}/api/voice/leave`, // 离开语音频道
+  getVoiceChannelInfo: `${prefix}/api/voice/channel/info`, // 获取语音频道信息
+  getVoiceChannelMembers: `${prefix}/api/voice/channel/members`, // 获取语音频道成员列表
 }
